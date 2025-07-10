@@ -1,5 +1,5 @@
 import Database from 'better-sqlite3';
-import { LoreConfig } from '../core/types';
+import { LoreConfig } from '../core/config';
 import { LoreErrorHandler } from '../core/errors';
 
 export class LoreDatabase {

@@ -1,5 +1,5 @@
 // Mock implementations for testing
-import { LoreAgent, AgentRegistry } from '../core/agent';
+import { LoreAgent, AgentRegistry } from '../core/agent/index';
 import { AgentContext, AgentResult } from '../core/types';
 
 // Mock Orchestrator Agent

@@ -1,5 +1,5 @@
 // Jest test setup file
-import { LoreConfig } from '../core/types';
+import { LoreConfig } from '../core/config';
 
 // Mock configuration for testing
 export const mockConfig: LoreConfig = {

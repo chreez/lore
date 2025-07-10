@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 
 import { LoreDatabase } from './database';
-import { LoreConfigSchema } from '../core/types';
+import { LoreConfigSchema } from '../core/config';
 
 // Database migration script
 async function migrate(): Promise<void> {

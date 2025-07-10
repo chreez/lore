@@ -1,10 +1,10 @@
 import { 
   ResearchSession, 
-  AgentResult, 
-  LoreConfig,
-  createId
+  AgentResult
 } from './types';
-import { AgentFactory, AgentPool } from './agent';
+import { LoreConfig } from './config';
+import { createId } from './utils/id';
+import { AgentFactory, AgentPool } from './agent/index';
 import { LoreErrorHandler } from './errors';
 
 // Main Agent Loop (Factor 8: Explicit control flow)

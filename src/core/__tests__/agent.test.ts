@@ -1,6 +1,6 @@
-import { AgentFactory, AgentRegistry, AgentPool } from '../agent';
+import { AgentFactory, AgentRegistry, AgentPool } from '../agent/index';
 import { registerMockAgents } from '../../test/mocks';
-import { createId } from '../types';
+import { createId } from '../utils/id';
 
 describe('Agent Framework', () => {
   beforeAll(() => {

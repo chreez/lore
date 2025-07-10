@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { LoreConfigSchema } from './core/types';
+import { LoreConfigSchema } from './core/config';
 import { SessionManager } from './core/executor';
 import { LoreDatabase } from './storage/database';
 
@@ -70,6 +70,7 @@ export async function main(): Promise<void> {
 
 // Export core components for library usage
 export * from './core/types';
+export * from './core/config';
 export * from './core/agent';
 export * from './core/executor';
 export * from './core/errors';
