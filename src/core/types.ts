@@ -1,6 +1,8 @@
 import { z } from 'zod';
 
 // Core Lore types following the 12-Factor Agents methodology
+// Configuration moved to ./config.ts
+// ID utilities moved to ./utils/id.ts
 
 // Error handling (Factor 9: Compact Errors)
 export const LoreErrorSchema = z.object({
@@ -157,49 +159,3 @@ export const AuditLogEntrySchema = z.object({
 
 export type AuditLogEntry = z.infer<typeof AuditLogEntrySchema>;
 
-// Configuration
-export const LoreConfigSchema = z.object({
-  database: z.object({
-    type: z.enum(['sqlite', 'postgresql']).default('sqlite'),
-    connectionString: z.string().default('lore.db'),
-  }),
-  llm: z.object({
-    provider: z.enum(['anthropic', 'openai']).default('anthropic'),
-    model: z.string().default('claude-3-5-sonnet-20241022'),
-    apiKey: z.string(),
-  }),
-  storage: z.object({
-    zettelkastenPath: z.string().default('./zettelkasten'),
-    auditLogPath: z.string().default('./audit_logs'),
-  }),
-  rateLimits: z.object({
-    youtube: z.number().default(10),
-    web: z.number().default(30),
-    academic: z.number().default(5),
-  }),
-  defaults: z.object({
-    costLimit: z.number().default(15),
-    depthLimit: z.number().default(2),
-    maxTokens: z.number().default(4000),
-  }),
-});
-
-export type LoreConfig = z.infer<typeof LoreConfigSchema>;
-
-// Utility type for creating IDs
-export const createId = (): string => {
-  const now = new Date();
-  const timestamp = now.toISOString().slice(0, 19).replace(/[-:]/g, '').replace('T', '-');
-  const random = Math.random().toString(36).substring(2, 8);
-  return `${timestamp}-${random}`;
-};
-
-// Utility type for creating note IDs
-export const createNoteId = (topic: string, subtopic?: string): string => {
-  const now = new Date();
-  const timestamp = now.toISOString().slice(0, 19).replace(/[-:]/g, '').replace('T', '-');
-  const cleanTopic = topic.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
-  const cleanSubtopic = subtopic?.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
-  
-  return cleanSubtopic ? `${timestamp}-${cleanTopic}-${cleanSubtopic}` : `${timestamp}-${cleanTopic}`;
-};
