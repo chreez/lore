@@ -1,7 +1,9 @@
-# Lore Implementation Project Plan
+# Lore Core Engine Project Plan
 
 ## Overview
-Transform the comprehensive PRD into a working autonomous research system following the 12-Factor Agents methodology.
+Build the core autonomous research engine with REST API, CLI interface, and agent framework following the 12-Factor Agents methodology.
+
+**Note**: Web interface and Obsidian plugin are developed separately in their respective repositories.
 
 ## Phase 1: Foundation (Weeks 1-2)
 **Goal**: Establish core architecture and basic functionality
@@ -80,22 +82,22 @@ Transform the comprehensive PRD into a working autonomous research system follow
 - [ ] API documentation
 - [ ] Error response standards
 
-## Phase 5: Web Interface (Weeks 9-10)
-**Goal**: Explorable knowledge interface
+## Phase 5: Export Systems (Weeks 9-10)
+**Goal**: Data export and format conversion
 
-### Week 9: TanStack Setup
-- [ ] React Router file-based routing
-- [ ] TanStack Query integration
-- [ ] TanStack Table for note listings
-- [ ] TanStack Virtual for performance
-- [ ] Tailwind CSS styling
+### Week 9: Core Export Agents
+- [ ] JSON export agent implementation
+- [ ] Markdown export with frontmatter
+- [ ] CSV export for data analysis
+- [ ] Export format validation
+- [ ] Batch export capabilities
 
-### Week 10: Core Components
-- [ ] Research dashboard
-- [ ] Note explorer with filtering
-- [ ] Knowledge graph visualization (D3.js)
-- [ ] Search interface
-- [ ] Export functionality
+### Week 10: Advanced Export Features
+- [ ] Context export for LLMs (token optimization)
+- [ ] Custom format support and templates
+- [ ] Export scheduling and automation
+- [ ] Export history and versioning
+- [ ] API endpoints for external tool integration
 
 ## Phase 6: Human-in-the-Loop (Weeks 11-12)
 **Goal**: Approval workflows and monitoring
@@ -114,22 +116,22 @@ Transform the comprehensive PRD into a working autonomous research system follow
 - [ ] Performance dashboards
 - [ ] Alerting system
 
-## Phase 7: CLI & Export (Weeks 13-14)
-**Goal**: Command-line interface and export capabilities
+## Phase 7: CLI Interface (Weeks 13-14)
+**Goal**: Command-line interface for core operations
 
-### Week 13: CLI Implementation
-- [ ] Command structure (`lore start`, `lore status`, etc.)
-- [ ] Session management
-- [ ] Progress reporting
+### Week 13: Core CLI Commands
+- [ ] Command structure (`lore start`, `lore status`, `lore query`)
+- [ ] Session management and control
+- [ ] Progress reporting and monitoring
 - [ ] Agent control commands
-- [ ] Configuration management
+- [ ] Configuration file management
 
-### Week 14: Export Systems
-- [ ] Obsidian export (markdown + frontmatter)
-- [ ] JSON export (complete data)
-- [ ] Context export for LLMs
-- [ ] Academic format export
-- [ ] Custom format support
+### Week 14: Advanced CLI Features
+- [ ] Interactive command mode
+- [ ] Batch operation support
+- [ ] CLI-based export functionality
+- [ ] Server management commands (`lore server start/stop`)
+- [ ] Daemon installation for auto-start
 
 ## Phase 8: Testing & Optimization (Weeks 15-16)
 **Goal**: Production readiness
@@ -187,8 +189,8 @@ Transform the comprehensive PRD into a working autonomous research system follow
 
 ### MVP Completion (Phase 1-5)
 - [ ] Complete research workflow: topic → knowledge graph
-- [ ] Web interface functional
-- [ ] Export to Obsidian working
+- [ ] REST API functional with all endpoints
+- [ ] Export systems working (JSON, Markdown, CSV)
 - [ ] <30 minute research completion
 - [ ] Cost tracking under $15/session
 
@@ -196,7 +198,7 @@ Transform the comprehensive PRD into a working autonomous research system follow
 - [ ] All scrapers implemented
 - [ ] Human-in-the-loop workflows
 - [ ] CLI interface complete
-- [ ] Multiple export formats
+- [ ] API ready for external tool integration
 
 ### Production Ready (Phase 1-9)
 - [ ] 99% uptime

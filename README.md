@@ -6,6 +6,29 @@ Every claim is linked to its source, making research suitable for business plans
 
 ## 🚀 Quick Start
 
+### For Users
+```bash
+# Install Lore core engine
+npm install -g @lore/cli
+
+# Start the Lore server
+lore server start
+
+# Optional: Auto-start on macOS login
+lore server install-daemon
+
+# Start research from any directory
+lore start "sustainable packaging market analysis"
+
+# Continue research via CLI
+lore query "What are the cost trends?" --session <session-id>
+
+# Optional: Install external tools
+# Web interface: https://github.com/chreez/lore-web
+# Obsidian plugin: https://github.com/chreez/lore-obsidian
+```
+
+### For Development
 ```bash
 # Clone the repository
 git clone <repository-url>
@@ -110,6 +133,38 @@ lore/
 └── scripts/               # Setup and deployment scripts
 ```
 
+## 🚀 Architecture
+
+### Core Engine (this repository)
+**Lore Server** - Autonomous research system with CLI and REST API
+
+- **REST API** - Complete research functionality via HTTP endpoints (see `docs/api/openapi.yaml`)
+- **CLI Interface** - Command-line research operations
+- **Agent Framework** - Orchestrator, scrapers, processors following 12-Factor principles
+- **Data Storage** - SQLite/PostgreSQL with full audit trail
+
+### External Tools
+
+**[lore-web](https://github.com/chreez/lore-web)** - Web interface and visualization
+- Interactive knowledge graph with D3.js
+- Real-time research monitoring
+- Advanced search and filtering
+- Built with TanStack libraries (React, Router, Query, Table, Virtual)
+
+**[lore-obsidian](https://github.com/chreez/lore-obsidian)** - Obsidian vault integration
+- Seamless vault synchronization  
+- Zettelkasten note format with `[[wikilinks]]`
+- Command palette and slash command support
+- Real-time research updates in your vault
+
+### Integration
+All external tools reference:
+- **API Specification**: `docs/api/openapi.yaml` (versioned)
+- **TypeScript Types**: `src/interfaces/api.ts` (shared contracts)
+- **Version Compatibility**: Tools specify supported Lore API version
+
+**Note**: This repository contains the core Lore research engine - not visualization or vault integration code.
+
 ## 🚦 Current Status
 
 **Phase**: Foundation (Week 1-2) ✅ **COMPLETED**
@@ -197,10 +252,16 @@ npm run db:reset     # Reset database and run migrations
 
 ## 📖 Documentation
 
-- **[Product Requirements](docs/specifications/research-system-prd.md)** - Complete feature specifications
+**Core Engine:**
+- **[Product Requirements](docs/specifications/research-system-prd.md)** - Core engine specifications
+- **[API Documentation](docs/api/openapi.yaml)** - REST API specification for external tools
 - **[Project Plan](docs/planning/PROJECT_PLAN.md)** - Implementation timeline and task tracking
 - **[Architecture Decisions](docs/planning/REFACTORING_DECISIONS.md)** - Design rationale and library choices
 - **[Development Guide](CLAUDE.md)** - Detailed development guidelines and patterns
+
+**External Tools:**
+- **[lore-web](https://github.com/chreez/lore-web)** - Web interface documentation
+- **[lore-obsidian](https://github.com/chreez/lore-obsidian)** - Obsidian plugin documentation
 
 ## 🎯 Design Principles
 

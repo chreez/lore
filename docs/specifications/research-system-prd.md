@@ -4,6 +4,8 @@
 
 Lore is an autonomous research system that automatically gathers, verifies, and connects information from multiple sources while maintaining full traceability. Built following the 12-Factor Agents methodology for production-ready, transparent, and reliable operation.
 
+**Important**: This PRD defines the Lore application architecture and implementation. This repository contains the source code for the Lore system itself, not research artifacts or example research outputs.
+
 ## Problem Statement
 
 Researchers and knowledge workers lack a reliable system to automatically gather, verify, and connect information from multiple sources while maintaining full traceability of claims and sources. Current AI research tools often produce hallucinated or unverifiable information, making them unsuitable for business plans, investor decks, or critical decision-making.
@@ -291,22 +293,18 @@ audit_agent:
     - performance_metrics.json
     - cost_tracking.json
 
-web_generator_agent:
+export_agent:
   type: generator
   responsibilities:
-    - Convert notes to explorable web interface
-    - Generate interactive visualizations
-    - Create navigation structures
-    - Build search indices
-  implementation:
-    - Generate React components with TanStack libraries
-    - Create type-safe routes from database schema
-    - Build responsive, accessible interfaces
-    - Optimize for performance with virtualization
+    - Export notes in multiple formats
+    - Generate API responses
+    - Create data dumps
+    - Handle format conversions
   outputs:
-    - static_site/
-    - api_endpoints/
-    - search_index.json
+    - json_exports/
+    - markdown_files/
+    - csv_data/
+    - api_responses/
 ```
 
 ## Project Structure
@@ -351,10 +349,10 @@ lore/
 │   │   ├── routes.ts           # REST endpoints (Factor 6)
 │   │   ├── lifecycle.ts        # Agent lifecycle management
 │   │   └── query.ts            # Research query endpoints
-│   └── web/
-│       ├── components/         # React components
-│       ├── visualizations/     # D3.js graph views
-│       └── static/             # Generated site
+│   └── exports/
+│       ├── json/               # JSON export handlers
+│       ├── markdown/           # Markdown export handlers
+│       └── formats/            # Other export formats
 ├── tests/
 │   ├── unit/                   # Unit tests (>80% coverage)
 │   ├── integration/            # Integration tests
@@ -378,61 +376,59 @@ lore/
 
 ## Workflow Implementation
 
-### Research Workflow with Git Integration
+### Deployment Architecture
+
+**Core Research Engine:**
+**Lore Server** - Autonomous research system with CLI and REST API
+
+Lore core engine provides:
+- **REST API** - Complete research functionality via HTTP endpoints
+- **CLI Interface** - Command-line research operations
+- **Data Storage** - SQLite/PostgreSQL with full audit trail
+- **Agent Framework** - Orchestrator, scrapers, processors
+
+**External Tool Integration:**
+- Tools reference versioned API specification (see `/docs/api/openapi.yaml`)
+- Import TypeScript types from `src/interfaces/api.ts`
+- Examples: lore-web (visualization), lore-obsidian (vault integration)
+
+### User Research Workflow
 
 ```yaml
 workflow:
   1_initialization:
-    - validate_user_query
-    - create_research_session
-    - initialize_git_branch: "research/{session_id}"
-    - commit: "init: research session for {topic}"
+    - user_starts_lore_server (or auto-starts via daemon)
+    - user_runs: "lore start 'research topic'"
+    - create_research_session_in_database
   
   2_research_phase:
     - spawn_scraper_agents(parallel=true)
     - collect_raw_content
-    - store_raw_sources
-    - commit: "feat: raw content from {n} sources"
+    - store_sources_in_database
+    - create_atomic_notes_in_zettelkasten_format
   
   3_processing_phase:
     - generate_atomic_notes
     - extract_entities_and_tags
     - discover_note_links
     - verify_content_claims
-    - commit: "feat: processed {n} atomic notes"
   
   4_synthesis_phase:
     - build_knowledge_graph
     - identify_key_insights
     - flag_contradictions
     - generate_summary_notes
-    - commit: "feat: synthesized knowledge graph"
   
-  5_audit_phase:
-    - generate_audit_log
-    - calculate_confidence_metrics
-    - track_tool_performance
-    - commit: "docs: audit log and metrics"
+  5_access_research:
+    - view_via_web_interface (http://localhost:3000)
+    - query_via_cli_commands
+    - export_to_any_format (JSON, Markdown, CSV)
+    - optional_sync_to_obsidian_vault
   
-  6_generation_phase:
-    - generate_web_interface
-    - update_search_indices
-    - create_api_cache
-    - generate_exports
-    - commit: "feat: generated outputs for {topic}"
-  
-  7_testing_phase:
-    - validate_all_links
-    - test_source_accessibility
-    - verify_data_integrity
-    - run_e2e_tests
-    - commit: "test: validated research outputs"
-  
-  8_completion:
-    - merge_to_main_branch
-    - tag_version: "research-{topic}-{date}"
-    - cleanup_temp_resources
-    - notify_completion
+  6_completion:
+    - research_session_complete
+    - data_available_via_all_interfaces
+    - user_exports_or_continues_research
 ```
 
 ## API Design
@@ -591,7 +587,7 @@ model_selection:
   note_processor_agent: claude-3-5-sonnet
   link_discovery_agent: claude-3-haiku
   verification_agent: claude-3-5-sonnet
-  web_generator_agent: claude-3-haiku
+  export_agent: claude-3-haiku
 
 cost_management:
   default_limit: $15.00
@@ -791,180 +787,18 @@ alerts:
   - Human approval timeout
 ```
 
-## Web Interface Implementation
+## External Tool Integration
 
-### Design Philosophy (TanStack Ethos)
+**API-First Architecture**: External tools integrate via REST API and shared TypeScript types.
 
-Following TanStack's principles:
-- **Framework-agnostic core**: Database and API work with any frontend
-- **Open standards**: Standard REST/GraphQL APIs, portable data formats
-- **No lock-in**: Export everything, own your data
-- **Developer-first**: Type-safe, discoverable, well-documented
-- **Minimal and focused**: Do research exploration exceptionally well
+**Reference Implementation**: See `docs/api/openapi.yaml` for complete API specification.
 
-### Technology Stack
+**Shared Types**: Import from `src/interfaces/api.ts` for type-safe integration.
 
-```yaml
-core_libraries:
-  - "@tanstack/react-router": File-based routing, type-safe navigation
-  - "@tanstack/react-query": Data fetching and caching
-  - "@tanstack/react-table": Research results and note listings
-  - "@tanstack/react-virtual": Efficiently render thousands of notes
-  - "tailwindcss": Utility-first styling (TanStack's choice)
-  - "typescript": End-to-end type safety
-
-styling_approach:
-  - Lift TanStack's clean aesthetic
-  - CSS variables for theming
-  - Focus on readability and density
-  - Dark mode by default
-  - Minimal animations, maximum performance
-```
-
-### Dynamic Generation from Database
-
-The web generator agent creates components based on the database schema:
-
-```typescript
-// Generated types from database schema
-interface Note {
-  id: string;  // YYYYMMDD-HHMMSS-topic-subtopic
-  content: string;
-  source: Source;
-  confidence: number;
-  tags: Tag[];
-  links: NoteLink[];
-}
-
-// Generated routes from research structure
-const routes = {
-  '/': HomePage,
-  '/research/:sessionId': ResearchDashboard,
-  '/notes': NotesExplorer,
-  '/notes/:noteId': NoteDetail,
-  '/graph': KnowledgeGraph,
-  '/sources': SourcesIndex,
-  '/search': SearchInterface,
-};
-```
-
-### Core Web Components
-
-```yaml
-generated_components:
-  HomePage:
-    - Active research sessions
-    - Quick search
-    - Recent topics
-    - Stats dashboard
-
-  ResearchDashboard:
-    - Real-time progress
-    - Agent activity monitor
-    - Source preview
-    - Pause/resume controls
-
-  NotesExplorer:
-    - Virtualized note list (TanStack Virtual)
-    - Faceted filtering
-    - Tag cloud
-    - Confidence indicators
-
-  NoteDetail:
-    - Markdown rendering
-    - Source attribution
-    - Related notes graph
-    - Edit/annotate functions
-
-  KnowledgeGraph:
-    - D3.js force-directed graph
-    - Zoom/pan controls
-    - Filter by connection type
-    - Node details on hover
-
-  SearchInterface:
-    - Full-text search
-    - Semantic search option
-    - Search history
-    - Saved queries
-```
-
-### Progressive Enhancement Path
-
-```yaml
-phase_1_static:
-  - Agent generates static HTML/JS
-  - Embedded JSON data
-  - Basic interactivity
-  - Works offline
-
-phase_2_dynamic:
-  - TanStack Query for API calls
-  - Real-time updates via SSE
-  - Collaborative features
-  - Advanced filtering
-
-phase_3_intelligent:
-  - AI-powered query interface
-  - Suggested connections
-  - Trend detection
-  - Predictive navigation
-```
-
-### Web Generator Agent Specification
-
-```typescript
-class WebGeneratorAgent {
-  async generateFromDatabase() {
-    // 1. Analyze database schema and content
-    const schema = await this.introspectDatabase();
-    const stats = await this.gatherStatistics();
-    
-    // 2. Generate TypeScript types
-    const types = this.generateTypes(schema);
-    
-    // 3. Generate route structure
-    const routes = this.generateRoutes(stats);
-    
-    // 4. Generate components
-    const components = this.generateComponents(schema, stats);
-    
-    // 5. Generate API client
-    const apiClient = this.generateAPIClient(schema);
-    
-    // 6. Build and optimize
-    await this.buildSite(types, routes, components, apiClient);
-  }
-}
-```
-
-### Responsive Design Patterns
-
-```css
-/* TanStack-inspired design system */
-:root {
-  --bg-primary: #0a0a0a;
-  --bg-secondary: #1a1a1a;
-  --text-primary: #ffffff;
-  --text-secondary: #a0a0a0;
-  --accent: #00d9ff;
-  --border: #2a2a2a;
-}
-
-/* Dense, information-rich layouts */
-.note-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
-}
-
-/* Focus on content, not chrome */
-.minimal-ui {
-  max-width: 100%;
-  padding: 0;
-  margin: 0;
-}
-```
+**Example Integrations:**
+- **lore-web**: Visualization and web interface (separate repository)
+- **lore-obsidian**: Obsidian vault integration (separate repository)
+- **Custom Tools**: Any application can integrate via REST API
 
 ## Deployment Strategy
 
@@ -1022,14 +856,19 @@ test_scenarios:
 ## CLI Interface
 
 ```bash
-# Initialize new research
+# Server management
+lore server start
+lore server install-daemon  # Auto-start on macOS login
+lore server stop
+
+# Initialize new research (from any directory)
 lore start "market analysis for sustainable packaging"
 
 # Check status
 lore status <session-id>
 
 # Query knowledge base
-lore query "what are the main trends?"
+lore query "what are the main trends?" --session <session-id>
 
 # Export for LLM context
 lore export context --topic "packaging trends" --tokens 50000
@@ -1050,9 +889,9 @@ lore agents logs <agent-id>
 
 ### Phase 2 (Beta)
 - All planned scrapers implemented
-- Full graph visualization
 - Human-in-the-loop workflows
 - Production monitoring
+- External tool integrations
 
 ### Phase 3 (GA)
 - 99.9% uptime

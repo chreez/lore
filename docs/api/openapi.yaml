@@ -1,0 +1,678 @@
+openapi: 3.0.3
+info:
+  title: Lore Research Engine API
+  description: |
+    REST API for the Lore autonomous research system core engine.
+    
+    **External Tool Integration:**
+    - Reference this specification when building tools that integrate with Lore
+    - Specify compatible API version in your tool's configuration
+    - Import TypeScript types from `@lore/types` package
+    
+  version: 1.0.0
+  contact:
+    name: Lore API Support
+    url: https://github.com/chreez/lore
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+  - url: https://api.lore.example.com
+    description: Production server
+
+paths:
+  /api/v1/research/start:
+    post:
+      summary: Start new research session
+      operationId: startResearch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartResearchRequest'
+      responses:
+        '200':
+          description: Research session started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StartResearchResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /api/v1/research/{sessionId}/status:
+    get:
+      summary: Get research session status
+      operationId: getSessionStatus
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '200':
+          description: Session status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoreResearchSession'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/research/{sessionId}/pause:
+    post:
+      summary: Pause research session
+      operationId: pauseSession
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '200':
+          description: Session paused
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/research/{sessionId}/resume:
+    post:
+      summary: Resume research session
+      operationId: resumeSession
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '200':
+          description: Session resumed
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/notes/search:
+    get:
+      summary: Search notes
+      operationId: searchNotes
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+          description: Full-text search query
+        - name: tags
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          description: Filter by tags
+        - name: types
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [FACT, OPINION, DATA, CLAIM, QUESTION]
+          description: Filter by content types
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 50
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchNotesResponse'
+
+  /api/v1/notes/{noteId}:
+    get:
+      summary: Get note by ID
+      operationId: getNote
+      parameters:
+        - $ref: '#/components/parameters/NoteId'
+      responses:
+        '200':
+          description: Note details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoreNote'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/notes/{noteId}/context:
+    get:
+      summary: Get note context for LLM
+      operationId: getNoteContext
+      parameters:
+        - $ref: '#/components/parameters/NoteId'
+        - name: max_tokens
+          in: query
+          schema:
+            type: integer
+            minimum: 100
+            maximum: 100000
+            default: 4000
+        - name: include_linked
+          in: query
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Note context
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteContextResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/graph/data:
+    get:
+      summary: Get knowledge graph data
+      operationId: getGraphData
+      parameters:
+        - name: session_id
+          in: query
+          schema:
+            type: string
+          description: Filter to specific research session
+        - name: depth
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 5
+            default: 2
+          description: Maximum connection depth
+      responses:
+        '200':
+          description: Graph data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoreGraphData'
+
+  /api/v1/export:
+    post:
+      summary: Export research data
+      operationId: exportData
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportRequest'
+      responses:
+        '200':
+          description: Export completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportResponse'
+
+  /api/v1/events/{sessionId}:
+    get:
+      summary: Server-Sent Events for real-time updates
+      operationId: getSessionEvents
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '200':
+          description: Event stream
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+components:
+  parameters:
+    SessionId:
+      name: sessionId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Research session ID
+
+    NoteId:
+      name: noteId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Note ID (YYYYMMDD-HHMMSS-topic-subtopic format)
+
+  schemas:
+    StartResearchRequest:
+      type: object
+      required:
+        - topic
+      properties:
+        topic:
+          type: string
+          example: "sustainable packaging market analysis"
+        depth_limit:
+          type: integer
+          minimum: 1
+          maximum: 5
+          default: 2
+        source_types:
+          type: array
+          items:
+            type: string
+            enum: [youtube, web, pdf, academic]
+        tags:
+          type: array
+          items:
+            type: string
+        cost_limit:
+          type: number
+          minimum: 1
+          maximum: 1000
+          default: 15
+
+    StartResearchResponse:
+      type: object
+      required:
+        - session_id
+        - estimated_time
+        - estimated_cost
+      properties:
+        session_id:
+          type: string
+          example: "20241215-143022-sustainable-packaging"
+        estimated_time:
+          type: number
+          description: Estimated completion time in minutes
+          example: 25
+        estimated_cost:
+          type: number
+          description: Estimated cost in USD
+          example: 12.50
+
+    LoreNote:
+      type: object
+      required:
+        - id
+        - content
+        - created_at
+        - source_id
+        - confidence
+        - note_type
+      properties:
+        id:
+          type: string
+          example: "20241215-143022-sustainable-packaging-001"
+        content:
+          type: string
+          example: "The global sustainable packaging market was valued at $220 billion in 2023."
+        created_at:
+          type: string
+          format: date-time
+        source_id:
+          type: string
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          example: 0.85
+        note_type:
+          type: string
+          enum: [atomic, synthesis, question]
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/LoreTag'
+        content_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/LoreContentType'
+
+    LoreSource:
+      type: object
+      required:
+        - id
+        - url
+        - scraped_at
+        - scraper_tool
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+          format: uri
+        title:
+          type: string
+        author:
+          type: string
+        content_date:
+          type: string
+          format: date-time
+        scraped_at:
+          type: string
+          format: date-time
+        scraper_tool:
+          type: string
+          example: "youtube-scraper"
+        extraction_method:
+          type: string
+        raw_content:
+          type: string
+
+    LoreTag:
+      type: object
+      required:
+        - id
+        - tag_name
+        - tag_type
+      properties:
+        id:
+          type: integer
+        tag_name:
+          type: string
+          example: "market_analysis"
+        tag_type:
+          type: string
+          enum: [content, quality, domain, method]
+
+    LoreContentType:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum: [FACT, OPINION, DATA, CLAIM, QUESTION]
+
+    LoreResearchSession:
+      type: object
+      required:
+        - id
+        - topic
+        - started_at
+        - depth_limit
+        - status
+      properties:
+        id:
+          type: string
+        topic:
+          type: string
+        started_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+        depth_limit:
+          type: integer
+        status:
+          type: string
+          enum: [running, completed, failed]
+        progress:
+          $ref: '#/components/schemas/LoreSessionProgress'
+
+    LoreSessionProgress:
+      type: object
+      properties:
+        current_phase:
+          type: string
+          example: "processing"
+        agents_active:
+          type: integer
+          example: 3
+        sources_scraped:
+          type: integer
+          example: 12
+        notes_generated:
+          type: integer
+          example: 45
+        estimated_completion:
+          type: string
+          format: date-time
+
+    SearchNotesResponse:
+      type: object
+      required:
+        - notes
+        - total
+        - facets
+      properties:
+        notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/LoreNote'
+        total:
+          type: integer
+        facets:
+          type: object
+          properties:
+            tags:
+              type: array
+              items:
+                type: object
+                properties:
+                  tag:
+                    type: string
+                  count:
+                    type: integer
+            types:
+              type: array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  count:
+                    type: integer
+            sources:
+              type: array
+              items:
+                type: object
+                properties:
+                  source:
+                    type: string
+                  count:
+                    type: integer
+
+    NoteContextResponse:
+      type: object
+      required:
+        - context
+        - token_count
+        - linked_notes
+      properties:
+        context:
+          type: string
+        token_count:
+          type: integer
+        linked_notes:
+          type: array
+          items:
+            type: string
+
+    ExportRequest:
+      type: object
+      required:
+        - format
+      properties:
+        format:
+          type: string
+          enum: [json, markdown, csv, obsidian]
+        note_ids:
+          type: array
+          items:
+            type: string
+        session_id:
+          type: string
+        options:
+          type: object
+          additionalProperties: true
+
+    ExportResponse:
+      type: object
+      required:
+        - metadata
+      properties:
+        download_url:
+          type: string
+          format: uri
+        content:
+          type: string
+        metadata:
+          type: object
+          properties:
+            format:
+              type: string
+            note_count:
+              type: integer
+            generated_at:
+              type: string
+              format: date-time
+
+    LoreGraphData:
+      type: object
+      required:
+        - nodes
+        - edges
+        - metadata
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/LoreGraphNode'
+        edges:
+          type: array
+          items:
+            $ref: '#/components/schemas/LoreGraphEdge'
+        metadata:
+          type: object
+          properties:
+            total_nodes:
+              type: integer
+            total_edges:
+              type: integer
+            generated_at:
+              type: string
+              format: date-time
+
+    LoreGraphNode:
+      type: object
+      required:
+        - id
+        - label
+        - type
+        - confidence
+        - tags
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        type:
+          type: string
+          enum: [atomic, synthesis, question]
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+        tags:
+          type: array
+          items:
+            type: string
+        x:
+          type: number
+        y:
+          type: number
+
+    LoreGraphEdge:
+      type: object
+      required:
+        - source
+        - target
+        - type
+      properties:
+        source:
+          type: string
+        target:
+          type: string
+        type:
+          type: string
+          enum: [supports, contradicts, extends, questions]
+        weight:
+          type: number
+
+    LoreError:
+      type: object
+      required:
+        - type
+        - message
+        - can_retry
+        - timestamp
+      properties:
+        type:
+          type: string
+        message:
+          type: string
+        context:
+          type: string
+        suggestion:
+          type: string
+        agent:
+          type: string
+        can_retry:
+          type: boolean
+        timestamp:
+          type: string
+          format: date-time
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LoreError'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LoreError'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LoreError'
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+security:
+  - ApiKeyAuth: []
+  - {} # Allow unauthenticated access for development
+
+tags:
+  - name: Research
+    description: Research session management
+  - name: Notes
+    description: Note retrieval and search
+  - name: Graph
+    description: Knowledge graph data
+  - name: Export
+    description: Data export functionality
+  - name: Events
+    description: Real-time updates
