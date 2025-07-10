@@ -64,7 +64,7 @@ Each agent follows core principles:
 - **Project Plan Correlation**: Every completed task in PROJECT_PLAN.md must have a corresponding commit
 
 ### Project Plan Maintenance
-- **ALWAYS** update PROJECT_PLAN.md when completing tasks
+- **ALWAYS** update `docs/planning/PROJECT_PLAN.md` when completing tasks
 - Mark completed items with `[x]` as they're finished
 - Add discovered tasks or adjustments to the plan in real-time
 - Update timelines if tasks take longer than expected
@@ -72,6 +72,7 @@ Each agent follows core principles:
 - Keep the plan as the single source of truth for project status
 - **Commit Rule**: After marking tasks complete, commit both code changes and PROJECT_PLAN.md updates together
 - **Commit Message Format**: `feat: [task description] (completes Week X task)`
+- **Claude Summaries**: Place generated summaries in `docs/summaries/` with descriptive names
 
 ### File Naming Conventions
 - Zettelkasten notes: `YYYYMMDD-HHMMSS-topic-subtopic.md`
@@ -191,5 +192,8 @@ When implementation begins, commands will likely include:
 
 ## Documentation References
 
-- `research-system-prd.md` - Complete product requirements and specifications
-- `lore-claude-context.md` - Development guidelines and project context
+- `docs/specifications/research-system-prd.md` - Complete product requirements and specifications
+- `docs/planning/PROJECT_PLAN.md` - Implementation timeline and task tracking
+- `docs/planning/REFACTORING_DECISIONS.md` - Architectural decisions and rationale
+- `docs/summaries/` - Claude-generated summaries and progress reports
+- `CLAUDE.md` - Development guidelines and project context (this file)
