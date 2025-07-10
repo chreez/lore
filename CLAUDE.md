@@ -53,11 +53,15 @@ Each agent follows core principles:
 - No spaces in filenames (use hyphens)
 - Maximum file size: 200-300 lines (extract to modules beyond this)
 
-### Git Workflow
+### Git Workflow & Commit Standards
 - Agents create commits at each research phase
 - Branch per research session: `research/{session_id}`
 - Merge to main upon completion
 - Tag completed research: `lore-{topic}-{date}`
+- **Commit Size Rule**: Each commit should contain ≤300 lines of code changes
+- **Atomic Commits**: Break large changes into multiple logical commits
+- **Commit Messages**: Clear, descriptive messages explaining the "why"
+- **Project Plan Correlation**: Every completed task in PROJECT_PLAN.md must have a corresponding commit
 
 ### Project Plan Maintenance
 - **ALWAYS** update PROJECT_PLAN.md when completing tasks
@@ -66,6 +70,8 @@ Each agent follows core principles:
 - Update timelines if tasks take longer than expected
 - Document blockers or dependencies as they're discovered
 - Keep the plan as the single source of truth for project status
+- **Commit Rule**: After marking tasks complete, commit both code changes and PROJECT_PLAN.md updates together
+- **Commit Message Format**: `feat: [task description] (completes Week X task)`
 
 ### File Naming Conventions
 - Zettelkasten notes: `YYYYMMDD-HHMMSS-topic-subtopic.md`
