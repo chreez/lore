@@ -59,6 +59,14 @@ Each agent follows core principles:
 - Merge to main upon completion
 - Tag completed research: `lore-{topic}-{date}`
 
+### Project Plan Maintenance
+- **ALWAYS** update PROJECT_PLAN.md when completing tasks
+- Mark completed items with `[x]` as they're finished
+- Add discovered tasks or adjustments to the plan in real-time
+- Update timelines if tasks take longer than expected
+- Document blockers or dependencies as they're discovered
+- Keep the plan as the single source of truth for project status
+
 ### File Naming Conventions
 - Zettelkasten notes: `YYYYMMDD-HHMMSS-topic-subtopic.md`
 - Use hyphens instead of spaces
