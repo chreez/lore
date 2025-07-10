@@ -38,6 +38,7 @@ Researchers and knowledge workers lack a reliable system to automatically gather
 - Sources: YouTube, web articles, PDFs, academic papers
 - Tags: [FACT], [OPINION], [DATA], [CLAIM], [QUESTION]
 - Parallel agent execution for efficiency
+- **Note**: Leverages Claude/LLMs for analysis, not reimplementing AI capabilities
 
 ### 2. Traceability System
 - Every piece of content → source URL + timestamp
@@ -52,6 +53,7 @@ Researchers and knowledge workers lack a reliable system to automatically gather
 - API for LLM-optimized context chunks
 - Filter by type/date/confidence/source
 - Export to multiple formats (JSON, Markdown, PDF)
+- **Note**: Output formatting delegated to existing libraries, not custom-built
 
 ## Technical Architecture
 

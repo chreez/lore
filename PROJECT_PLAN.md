@@ -13,6 +13,15 @@ Transform the comprehensive PRD into a working autonomous research system follow
 - [ ] Implement core error handling patterns
 - [ ] Set up testing infrastructure (Jest, test utilities)
 
+### Week 1.5: Code Architecture Refactoring
+- [ ] Review and refactor for "less code is more" principles
+- [ ] Identify opportunities to leverage existing libraries (don't reinvent the wheel)
+- [ ] Break any large modules into focused <200 line files
+- [ ] Ensure agent architecture doesn't duplicate LLM capabilities
+- [ ] Extract reusable utilities into shared modules
+- [ ] Document decisions on what NOT to build (delegated to Claude/LLMs)
+- [ ] Set up file size linting rules to enforce module boundaries
+
 ### Week 2: Core Agent Framework
 - [ ] Build orchestrator agent skeleton
 - [ ] Implement agent state management (stateless design)

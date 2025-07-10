@@ -37,12 +37,21 @@ Each agent follows core principles:
 
 ## Development Guidelines
 
+### Code Philosophy - "Less Code is More"
+- **Leverage existing solutions**: Don't reinvent Claude, LLMs, or established patterns
+- **Small, focused files**: Each module should be readable in one screen (aim for <200 lines)
+- **Extract when necessary**: Break into secondary modules when complexity grows
+- **Human readability first**: Clear, self-documenting code over clever abstractions
+- **Minimal dependencies**: Use built-in Node.js/browser APIs when possible
+- **Composition over inheritance**: Small, composable functions and components
+
 ### Code Style
 - TypeScript with strict mode enabled
 - Functional React components
 - Explicit error handling (no thrown exceptions in agents)
 - Prefix interfaces with `Lore` (e.g., `LoreNote`, `LoreAgent`)
 - No spaces in filenames (use hyphens)
+- Maximum file size: 200-300 lines (extract to modules beyond this)
 
 ### Git Workflow
 - Agents create commits at each research phase
